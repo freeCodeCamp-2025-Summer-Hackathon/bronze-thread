@@ -5,4 +5,4 @@ The Hackathon project by bronze-thread team.
 
 ## Contributors
 * [wtfayxn](github.com/wtfayxn)
-* [Sudhansu](https://github.com/sudhansubhushanmishra)
+* <a href="https://github.com/sudhansubhushanmishra" target="_blank">Sudhansu</a>
