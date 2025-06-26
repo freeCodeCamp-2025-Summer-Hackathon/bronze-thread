@@ -6,6 +6,11 @@
 
 Topic not announced yet
 
+## Made With
+![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=Go&logoColor=FFFFFF)
+![Gin](https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=Gin&logoColor=FFFFFF)
+
 ### Setup
 
 1. Download and install Node.js (LTS v22) from the [official website](https://nodejs.org/en/download).
