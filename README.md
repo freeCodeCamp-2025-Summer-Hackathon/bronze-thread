@@ -21,6 +21,7 @@ Topic not announced yet
    `git clone https://github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread.git`
 5. `cd bronze-thread`
 6. `cd frontend && npm install`
+7. `cd backend && go run cmd/server/main.go`
 
 ### Project Structure
 
