@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
+	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/cmd/server/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -22,12 +22,8 @@ func main() {
 
 	router.SetTrustedProxies(nil)
 
-	// Define the GET /hello endpoint
-	router.GET("/hello", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello World",
-		})
-	})
+	// Use the created routes in `routes` directory
+	routes.RegisterHealthCheckRoutes(router)
 
 	// Start server on port 8080
 	log.Println("Server running on port http://localhost:" + port)
