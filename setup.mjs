@@ -16,7 +16,7 @@ function run(command, cwd = process.cwd()) {
 
 function checkIfExists(command) {
   try {
-    execSync(`${command}version`, { stdio: "ignore" });
+    execSync(`${command}`, { stdio: "ignore" });
     return true;
   } catch (err) {
     return false;
@@ -82,10 +82,10 @@ function setupBackend() {
 
 const osType = getPlatform();
 
-if (!checkIfExists("go ")) {
+if (!checkIfExists("go version")) {
   installGo(osType);
 }
-if (!checkIfExists("air --")) {
+if (!checkIfExists("air -v")) {
   installAir();
 }
 
