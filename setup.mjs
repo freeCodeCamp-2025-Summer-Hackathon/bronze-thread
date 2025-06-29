@@ -58,7 +58,7 @@ function installGo(osType) {
 }
 
 function installAir() {
-  if (checkIfExists("go")) {
+  if (checkIfExists("go version")) {
     run("go install github.com/air-verse/air@latest");
   } else {
     console.warn("Go is required to install Air");
