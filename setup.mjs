@@ -57,6 +57,23 @@ function installGo(osType) {
   }
 }
 
+function installGolangciLint(osType) {
+  console.log("Installing GolangCILint ...");
+  switch (osType) {
+    case "windows":
+      run("winget install --id GolangCI.golangci-lint -e");
+      break;
+    case "macos":
+      run("brew install golangci-lint");
+      break;
+    case "linux":
+      run("curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.2.0");
+      break;
+    default:
+      console.error("Could not install automatically, please refer to golangcilint docs");
+  }
+}
+
 function installAir() {
   if (checkIfExists("go version")) {
     run("go install github.com/air-verse/air@latest");
@@ -84,6 +101,9 @@ const osType = getPlatform();
 
 if (!checkIfExists("go version")) {
   installGo(osType);
+}
+if (!checkIfExists("golangci-lint --version")) {
+  installGolangciLint(osType);
 }
 if (!checkIfExists("air -v")) {
   installAir();
