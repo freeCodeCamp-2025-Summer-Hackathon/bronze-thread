@@ -1,0 +1,54 @@
+name: Linting and formatting
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+          cache-dependency-path: backend/go.sum
+
+      - name: Install dependencies for frontend
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Lint frontend
+        run: |
+          cd frontend
+          npx eslint . --max-warnings=0
+
+      - name: Check formatting for frontend
+        run: |
+          cd frontend
+          npx prettier --check .
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.2
+          working-directory: backend
+
+      - name: Check Go formatting
+        run: |
+          cd backend
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "There are unformatted files."
+            gofmt -l .
+            exit 1
+          fi

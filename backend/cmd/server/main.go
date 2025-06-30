@@ -20,7 +20,10 @@ func main() {
 	// Create Gin router
 	router := gin.Default()
 
-	router.SetTrustedProxies(nil)
+	err = router.SetTrustedProxies(nil)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	// Use the created routes in `routes` directory
 	routes.RegisterHealthCheckRoutes(router)
