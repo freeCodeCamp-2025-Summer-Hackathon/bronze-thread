@@ -1,0 +1,13 @@
+# Frontend linting
+cd frontend
+npm run lint
+npm run format
+cd ..
+
+# Backend checks
+cd backend
+echo "Running Go lang linting and formatting ..."
+golangci-lint run
+gofmt -s -w .
+
+cd ..

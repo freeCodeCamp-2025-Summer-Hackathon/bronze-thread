@@ -1,0 +1,25 @@
+{
+  "name": "bronze-thread",
+  "version": "1.0.0",
+  "description": "**Team bronze-thread's project at freeCodeCamp's first ever Hackathon.**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/issues"
+  },
+  "homepage": "https://github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
