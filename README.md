@@ -2,9 +2,13 @@
 
 **Team bronze-thread's project at freeCodeCamp's first ever Hackathon.**
 
-## {{Project Name}}
+## Project: SwapCart
+A local item-swapping platform (books, clothes, gadgets).
 
-Topic not announced yet
+### User Stories:
+- As a user, I can list items I want to give away or trade.
+- As a user, I can browse nearby listings and initiate a swap.
+- As a user, I can rate my experience after a trade.
 
 ## Made With
 ![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
