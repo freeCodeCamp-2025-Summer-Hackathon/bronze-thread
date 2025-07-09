@@ -1,2 +1,3 @@
 [build]
-cmd = "go run cmd/server/main.go"
+  cmd = "go build -o tmp/main ./cmd/server"
+  kill_old_process = true
