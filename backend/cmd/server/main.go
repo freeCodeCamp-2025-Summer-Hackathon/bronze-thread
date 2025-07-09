@@ -36,6 +36,7 @@ func main() {
 
 	// Use the created routes in `routes` directory
 	routes.RegisterHealthCheckRoutes(router)
+	routes.RegisterAuthenticationRoutes(router)
 
 	// Start server on port 8080
 	log.Println("Server running on port http://localhost:" + port)
