@@ -14,6 +14,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@nuxt/ui": "^3.2.0",
     "@tailwindcss/vite": "^4.1.10",
     "pinia": "^3.0.3",
     "tailwindcss": "^4.1.10",
