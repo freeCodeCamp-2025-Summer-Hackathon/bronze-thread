@@ -16,6 +16,44 @@ type SignInRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type RegisterRequest struct {
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
+func Register(c *gin.Context) {
+	var req RegisterRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user db.User
+	result := db.DB.Where("email = ?", req.Email).First(&user)
+
+	if result.Error == nil {
+		// User exists
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists!"})
+		return
+	}
+
+	user = db.User{
+		Username: req.Username,
+		Password: req.Password,
+		Email:    req.Email,
+	}
+	if err := db.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User registration successful.",
+		"user":    user,
+	})
+}
+
 func Signin(c *gin.Context) {
 	var req SignInRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -27,18 +65,11 @@ func Signin(c *gin.Context) {
 	result := db.DB.Where("email = ?", req.Email).First(&user)
 
 	if result.Error != nil {
-		// User not found, create new user
-		user = db.User{
-			Password: req.Password,
-			Email:    req.Email,
-		}
-		if err := db.DB.Create(&user).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
-			return
-		}
+		// User not found
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found, register a new account!"})
+		return
 	}
 
-	// "Login" logic: For a real app, you'd set a cookie or JWT token here.
 	if user.Password != req.Password {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Password is not correct!"})
 		return
@@ -47,7 +78,7 @@ func Signin(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"email": user.Email,
-			"name":  user.Name,
+			"name":  user.Username,
 			"exp":   time.Now().Add(time.Hour * 24).Unix(),
 		})
 

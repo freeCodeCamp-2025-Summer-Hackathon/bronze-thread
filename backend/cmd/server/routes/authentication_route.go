@@ -9,5 +9,6 @@ func RegisterAuthenticationRoutes(router *gin.Engine) {
 	userGroup := router.Group("/auth")
 	{
 		userGroup.POST("/signin", controllers.Signin)
+		userGroup.POST("/register", controllers.Register)
 	}
 }
