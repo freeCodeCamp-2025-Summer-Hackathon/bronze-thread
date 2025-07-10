@@ -6,7 +6,31 @@ This document describes the database schema for a item swapping platform. The sc
 
 ## Core Tables
 
-### Users Table
+# Database Entities
+
+## USERS
+
+## CATEGORIES
+
+## ITEMS
+
+## SWAP_REQUESTS
+
+## SWAP_REQUEST_ITEMS
+
+## SWAP_TRANSACTIONS
+
+## SWAP_TRANSACTION_ITEMS
+
+## CHAT_ROOMS
+
+## CHAT_MESSAGES
+
+## USER_RATINGS
+
+## USER_SESSIONS
+
+### 1.Users Table
 
 Stores user account information and profile data.
 
@@ -36,11 +60,16 @@ Stores user account information and profile data.
 - Has many Items (as owner)
 - Has many SwapRequests (as requester)
 - Has many SwapRequests (as owner)
-- Has many Notifications
 - Has many UserRatings (as rater)
 - Has many UserRatings (as rated user)
+- Has many ChatMessages (as sender)
+- Has many ChatRooms (as user1)
+- Has many ChatRooms (as user2)
+- Has many SwapTransactions (as user1)
+- Has many SwapTransactions (as user2)
+- Has many SwapTransactionItems (as item owner)
 
-### Categories Table
+### 2.Categories Table
 
 Defines item categories for organization.
 
@@ -55,7 +84,7 @@ Defines item categories for organization.
 
 - Has many Items
 
-### Items Table
+### 3.Items Table
 
 Stores items available for swapping.
 
@@ -71,8 +100,6 @@ Stores items available for swapping.
 | currency | varchar(3) | DEFAULT 'INR' | Currency code |
 | image_urls | text[] | JSON serialized | Array of image URLs |
 | status | varchar(20) | DEFAULT 'available', INDEXED | Item status (available, pending, swapped) |
-| location_lat | decimal(10,8) | NULLABLE, INDEXED | Latitude coordinate |
-| location_lng | decimal(11,8) | NULLABLE, INDEXED | Longitude coordinate |
 | created_at | timestamp | AUTO_CREATE, INDEXED | Creation time |
 | updated_at | timestamp | AUTO_UPDATE | Last update time |
 | swapped_at | timestamp | NULLABLE | Swap completion time |
@@ -81,10 +108,12 @@ Stores items available for swapping.
 
 - Belongs to User (owner)
 - Belongs to Category
+- Has many SwapRequestItems
 - Has many SwapRequests (as requested item)
-- Has many SwapRequests (as offered item)
+- Has many ChatRooms (for discussions)
+- Has many SwapTransactionItems (when traded)
 
-### Swap Requests Table
+### 3.Swap Requests Table
 
 Manages swap requests between users.
 
@@ -94,8 +123,7 @@ Manages swap requests between users.
 | requester_id | uint | NOT NULL, INDEXED, FK | User making the request |
 | owner_id | uint | NOT NULL, INDEXED, FK | Owner of requested item |
 | requested_item_id | uint | NOT NULL, INDEXED, FK | Item being requested |
-| offered_item_id | uint | NOT NULL, INDEXED, FK | Item being offered |
-| status | varchar(20) | DEFAULT 'pending', INDEXED | Request status (pending, accepted, rejected, cancelled, completed)
+| status | varchar(20) | DEFAULT 'pending', INDEXED | Request status (pending, accepted, rejected, cancelled, completed) |
 | created_at | timestamp | AUTO_CREATE | Request creation time |
 | updated_at | timestamp | AUTO_UPDATE | Last update time |
 | expires_at | timestamp | INDEXED | Request expiration time |
@@ -105,11 +133,28 @@ Manages swap requests between users.
 - Belongs to User (requester)
 - Belongs to User (owner)
 - Belongs to Item (requested item)
-- Belongs to Item (offered item)
-- Has one ChatRoom
+- Has many SwapRequestItems
+- Has many ChatRooms
 - Has one SwapTransaction
 
-### Swap Transactions Table
+### 4.Swap Request Items Table
+
+Links swap requests to multiple items (many-to-many relationship).
+
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | uint | PRIMARY KEY, AUTO_INCREMENT | Unique identifier |
+| swap_request_id | uint | NOT NULL, INDEXED, FK | Reference to SwapRequests |
+| item_id | uint | NOT NULL, INDEXED, FK | Reference to Items |
+| item_type | varchar(20) | CHECK constraint | Type of item (requested, offered) |
+| created_at | timestamp | AUTO_CREATE | Creation time |
+
+**Relationships:**
+
+- Belongs to SwapRequest
+- Belongs to Item
+
+### 5.Swap Transactions Table
 
 Tracks confirmed swaps and their completion status.
 
@@ -119,28 +164,44 @@ Tracks confirmed swaps and their completion status.
 | swap_request_id | uint | NOT NULL, UNIQUE, FK | Reference to SwapRequest |
 | user1_id | uint | NOT NULL, INDEXED, FK | First user in swap |
 | user2_id | uint | NOT NULL, INDEXED, FK | Second user in swap |
-| item1_id | uint | NOT NULL, INDEXED, FK | First item in swap |
-| item2_id | uint | NOT NULL, INDEXED, FK | Second item in swap |
 | created_at | timestamp | AUTO_CREATE | Transaction creation time |
 | completed_at | timestamp | NULLABLE | Completion time |
 
 **Relationships:**
 
-- Belongs to SwapRequest
+- Belongs to SwapRequest (one-to-one)
 - Belongs to User (user1)
 - Belongs to User (user2)
-- Belongs to Item (item1)
-- Belongs to Item (item2)
+- Has many SwapTransactionItems
 - Has many UserRatings
 
-### Chat Rooms Table
+### 6.Swap Transaction Items Table
 
-Manages chat sessions between users for swap requests.
+Links swap transactions to multiple items involved in the trade.
+
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| id | uint | PRIMARY KEY, AUTO_INCREMENT | Unique identifier |
+| swap_transaction_id | uint | NOT NULL, INDEXED, FK | Reference to SwapTransactions |
+| item_id | uint | NOT NULL, INDEXED, FK | Reference to Items |
+| user_id | uint | NOT NULL, INDEXED, FK | Owner of the item |
+| created_at | timestamp | AUTO_CREATE | Creation time |
+
+**Relationships:**
+
+- Belongs to SwapTransaction
+- Belongs to Item
+- Belongs to User (item owner)
+
+### 7.Chat Rooms Table
+
+Manages chat sessions between users for swap requests or general item inquiries.
 
 | Field | Type | Constraints | Description |
 |-------|------|-------------|-------------|
 | id | uint | PRIMARY KEY, AUTO_INCREMENT | Unique chat room identifier |
-| swap_request_id | uint | NOT NULL, UNIQUE, FK | Reference to SwapRequest |
+| swap_request_id | uint | NULLABLE, INDEXED, FK | Reference to SwapRequest (optional) |
+| item_id | uint | NULLABLE, INDEXED, FK | Reference to Item (optional) |
 | user1_id | uint | NOT NULL, INDEXED, FK | First user in chat |
 | user2_id | uint | NOT NULL, INDEXED, FK | Second user in chat |
 | is_active | boolean | DEFAULT true | Chat room status |
@@ -149,12 +210,13 @@ Manages chat sessions between users for swap requests.
 
 **Relationships:**
 
-- Belongs to SwapRequest
+- Belongs to SwapRequest (optional)
+- Belongs to Item (optional)
 - Belongs to User (user1)
 - Belongs to User (user2)
 - Has many ChatMessages
 
-### Chat Messages Table
+### 8.Chat Messages Table
 
 Stores individual messages within chat rooms.
 
@@ -171,7 +233,7 @@ Stores individual messages within chat rooms.
 - Belongs to ChatRoom
 - Belongs to User (sender)
 
-### User Ratings Table
+### 9.User Ratings Table
 
 Stores ratings and reviews between users after completed swaps.
 
@@ -191,7 +253,7 @@ Stores ratings and reviews between users after completed swaps.
 - Belongs to User (rater)
 - Belongs to User (rated user)
 
-### User Sessions Table
+### 10.User Sessions Table
 
 Manages user authentication sessions.
 
@@ -207,6 +269,8 @@ Manages user authentication sessions.
 
 - Belongs to User
 
+-------------------------------------------------------------------------------------------------------------
+
 ## Request/Response Models
 
 ### Authentication Models
@@ -217,18 +281,29 @@ Manages user authentication sessions.
 ### Item Models
 
 - `ItemCreateRequest`: All necessary fields for creating a new item listing
+- `ItemUpdateRequest`: Fields for updating existing items
+- `ItemResponse`: Item data with owner information
+
+### Swap Models
+
+- `SwapRequestCreateRequest`: Create new swap request
+- `SwapRequestUpdateRequest`: Update swap request status
+- `SwapRequestResponse`: Swap request with item details
+
+### Chat Models
+
+- `ChatMessageRequest`: Send new message
+- `ChatMessageResponse`: Message with sender info
+
+### Rating Models
+
+- `UserRatingRequest`: Submit rating and review
+- `UserRatingResponse`: Rating with user details
 
 ### Response Models
 
 - `APIResponse`: Standard API response wrapper
 - `WSMessage`: WebSocket message structure
-
-## Notification Types
-
-- `swap_request`: New swap request received
-- `swap_accepted`: Swap request accepted
-- `swap_rejected`: Swap request rejected
-- `swap_completed`: Swap transaction completed
 
 ## Database Constraints and Business Rules
 
@@ -243,13 +318,14 @@ Manages user authentication sessions.
 
 - Items have 5 condition levels: new, like_new, good, fair, poor
 - Items have 3 status levels: available, pending, swapped
-- Location coordinates use decimal precision for accuracy
+- Items inherit location from their owner (Users table)
 
 ### Swap Request Constraints
 
 - Requests expire after 7 days by default
 - Status progression: pending → accepted/rejected → completed
 - Users cannot request their own items
+- Multiple items can be requested/offered per swap request
 
 ### Rating Constraints
 
@@ -259,16 +335,20 @@ Manages user authentication sessions.
 
 ### Chat Constraints
 
-- One chat room per swap request
+- Chat rooms can exist independently or be linked to swap requests/items
 - Messages support text only
 - Chat rooms remain active until manually closed
+- Users can chat about items before making swap requests
 
 ## Indexes for Performance
 
 - User email (unique)
-- Item owner_id, category_id, status, location coordinates
+- Item owner_id, category_id, status
 - Swap request status, expiration time
 - Chat message timestamps
+- SwapRequestItems: swap_request_id, item_id
+- SwapTransactionItems: swap_transaction_id
+- ChatRooms: swap_request_id, item_id
 - Various foreign key relationships
 
 ## Soft Delete Support
