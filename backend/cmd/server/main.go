@@ -53,6 +53,7 @@ func main() {
 	routes.RegisterHealthCheckRoutes(router)
 	routes.RegisterAuthenticationRoutes(router)
 	routes.RegisterUserRoutes(router)
+	routes.RegisterItemRoutes(router)
 
 	// Start server on port 8080
 	log.Println("Server running on port http://localhost:" + port)
