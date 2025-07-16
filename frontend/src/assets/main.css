@@ -2,36 +2,15 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+@theme static {
+  --color-primary: #fdf5f1;
+  --ui-bg-elevated: #faf1ed;
+  --color-secondary: #e8b4cb;
+  --color-tertiary: #faf1ed;
+  --color-black: #2e2a2d;
+  --color-black-mute: #6e696c;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.bg-elevated {
+  background-color: #faf1ed;
 }
