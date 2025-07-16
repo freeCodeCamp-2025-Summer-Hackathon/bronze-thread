@@ -50,16 +50,26 @@ type Client struct {
 	// The room ID the client is in.
 	RoomID uint
 }
-
-// readPump pumps messages from the websocket connection to the hub.
+// ReadPump pumps messages from the websocket connection to the hub.
 func (c *Client) ReadPump() {
 	defer func() {
-		c.Hub.Unregister <- c // Use capitalized Hub
-		c.Conn.Close()        // Use capitalized Conn
+		c.Hub.Unregister <- c
+		if err := c.Conn.Close(); err != nil {
+			log.Printf("Error closing connection in ReadPump: %v", err)
+		}
 	}()
 	c.Conn.SetReadLimit(maxMessageSize)
-	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	if err := c.Conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+		log.Printf("Error setting read deadline: %v", err)
+		return
+	}
+	c.Conn.SetPongHandler(func(string) error {
+		if err := c.Conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+			log.Printf("Error setting read deadline in pong handler: %v", err)
+		}
+		return nil
+	})
+
 	for {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
@@ -75,38 +85,48 @@ func (c *Client) ReadPump() {
 			Message:    string(message),
 		}
 
-		// NOTE: You had 'database.DB' here, but your other files use 'database.DB'. I've corrected it to 'database.DB'.
 		if err := database.DB.Create(&chatMessage).Error; err != nil {
 			log.Printf("error saving message: %v", err)
 			continue
 		}
 
-		c.Hub.Broadcast <- chatMessage // Use capitalized Hub
+		c.Hub.Broadcast <- chatMessage
 	}
 }
 
-// writePump pumps messages from the hub to the websocket connection.
+// WritePump pumps messages from the hub to the websocket connection.
 func (c *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.Conn.Close() // Use capitalized Conn
+		if err := c.Conn.Close(); err != nil {
+			log.Printf("Error closing connection in WritePump: %v", err)
+		}
 	}()
 	for {
 		select {
-		case message, ok := <-c.Send: // Use capitalized Send
-			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+		case message, ok := <-c.Send:
+			if err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				log.Printf("Error setting write deadline: %v", err)
+				return
+			}
 			if !ok {
-				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				// The hub closed the channel.
+				if err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+					log.Printf("Error writing close message: %v", err)
+				}
 				return
 			}
 
-			err := c.Conn.WriteJSON(message)
-			if err != nil {
+			if err := c.Conn.WriteJSON(message); err != nil {
+				log.Printf("Error writing JSON message: %v", err)
 				return
 			}
 		case <-ticker.C:
-			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				log.Printf("Error setting write deadline for ping: %v", err)
+				return
+			}
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
