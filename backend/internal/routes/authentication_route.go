@@ -6,9 +6,12 @@ import (
 )
 
 func RegisterAuthenticationRoutes(router *gin.Engine) {
-	userGroup := router.Group("/auth")
+	authGroup := router.Group("/auth")
 	{
-		userGroup.POST("/signin", controllers.Signin)
-		userGroup.POST("/register", controllers.Register)
+		// Endpoint for new user registration
+		authGroup.POST("/register", controllers.Register)
+
+		// Endpoint for user sign-in
+		authGroup.POST("/signin", controllers.Signin)
 	}
 }

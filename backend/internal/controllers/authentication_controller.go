@@ -5,96 +5,109 @@ import (
 	"os"
 	"time"
 
-	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/internal/db"
+	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/internal/database"
+	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/internal/dto"
+	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
-// Type for the payload while signin.
-type SignInRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-}
-
-type RegisterRequest struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-}
-
 func Register(c *gin.Context) {
-	var req RegisterRequest
+
+	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Validation failed", Message: err.Error()})
 		return
 	}
 
-	var user db.User
-	result := db.DB.Where("email = ?", req.Email).First(&user)
-
-	if result.Error == nil {
-		// User exists
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists!"})
+	// Check if a user with the given email already exists
+	var existingUser models.User
+	if database.DB.Where("email = ?", req.Email).First(&existingUser).Error == nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "User with this email already exists"})
 		return
 	}
 
-	user = db.User{
-		Username: req.Username,
-		Password: req.Password,
-		Email:    req.Email,
+	// Hash the password from the request
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "Failed to hash password"})
+		return
 	}
-	if err := db.DB.Create(&user).Error; err != nil {
+
+	// Create a new user model with the hashed password
+	user := models.User{
+		Name:         req.Name,
+		Email:        req.Email,
+		PasswordHash: string(hashedPassword),
+	}
+
+	// Save the new user to the database
+	if err := database.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User registration successful.",
-		"user":    user,
-	})
+	// Respond with a success message and the new UserID
+	c.JSON(http.StatusCreated, dto.RegisterResponse{Message: "User registered successfully", UserID: user.ID})
+
 }
 
 func Signin(c *gin.Context) {
-	var req SignInRequest
+	var req dto.LoginRequest
+
+	// Bind the incoming JSON to the LoginRequest DTO
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Validation failed", Message: err.Error()})
 		return
 	}
 
-	var user db.User
-	result := db.DB.Where("email = ?", req.Email).First(&user)
-
-	if result.Error != nil {
-		// User not found
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found, register a new account!"})
+	// Find the user by email
+	var user models.User
+	if err := database.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, dto.ErrorResponse{Error: "User not found or invalid credentials"})
 		return
 	}
 
-	if user.Password != req.Password {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Password is not correct!"})
+	// Compare the provided password with the stored hash
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "Invalid credentials"})
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"email": user.Email,
-			"name":  user.Username,
-			"exp":   time.Now().Add(time.Hour * 24).Unix(),
-		})
+	// Generate a new JWT token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+	})
 
-	jwt_secret_key := os.Getenv("JWT_SECRET_KEY")
-	tokenString, err := token.SignedString([]byte(jwt_secret_key))
+	jwtSecret := os.Getenv("JWT_SECRET_KEY")
+
+	tokenString, err := token.SignedString([]byte(jwtSecret))
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error while creating auth token.",
-			"error":   err,
-		})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "Failed to create token"})
+		return
 	}
 
+	// Set the token in a secure, HTTP-only cookie
 	c.SetCookie("token", tokenString, 3600, "/", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Signed in successfully",
-		"user":    user,
+	c.JSON(http.StatusOK, dto.LoginResponse{
+		Message: "Login successful",
+		Token:   tokenString,
+		User: dto.UserResponse{
+			ID:           user.ID,
+			Name:         user.Name,
+			Email:        user.Email,
+			Bio:          user.Bio,
+			AvatarURL:    user.AvatarURL,
+			City:         user.City,
+			State:        user.State,
+			RatingAvg:    user.RatingAvg,
+			TotalRatings: user.TotalRatings,
+			TotalSwaps:   user.TotalSwaps,
+			CreatedAt:    user.CreatedAt,
+		},
 	})
 }
