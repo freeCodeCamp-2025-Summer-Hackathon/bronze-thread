@@ -50,6 +50,7 @@ type Client struct {
 	// The room ID the client is in.
 	RoomID uint
 }
+
 // ReadPump pumps messages from the websocket connection to the hub.
 func (c *Client) ReadPump() {
 	defer func() {
