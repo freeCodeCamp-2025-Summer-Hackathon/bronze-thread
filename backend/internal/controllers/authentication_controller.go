@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/cmd/server/db"
+	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/internal/db"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
