@@ -18,5 +18,5 @@ func Connect() error {
 	DB = database
 
 	// Automigrate the models defined in schema.go
-	return DB.AutoMigrate(&User{})
+	return DB.AutoMigrate(&User{}, &Item{})
 }
