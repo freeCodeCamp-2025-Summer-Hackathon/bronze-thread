@@ -5,17 +5,15 @@
 
 @theme static {
   --color-primary: #fdf5f1;
-  --color-swaplight:#F6E5DC;
-  --color-swapbase:#F6B199;
+  --color-swaplight: #f6e5dc;
+  --color-swapbase: #f6b199;
   --ui-bg-elevated: #faf1ed;
   --color-secondary: #e8b4cb;
   --color-tertiary: #faf1ed;
   --color-black: #2e2a2d;
   --color-black-mute: #6e696c;
-  --font-swap: "Playfair Display", "serif";
-  
+  --font-swap: 'Playfair Display', 'serif';
 }
-
 
 .bg-elevated {
   background-color: #faf1ed;

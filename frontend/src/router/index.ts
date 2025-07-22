@@ -28,19 +28,17 @@ const router = createRouter({
       component: AuthView,
     },
     {
-  path: '/product/:id',
-  name: 'product-detail',
-  component: () => import('@/views/product/[id].vue'),
-  props: true,
-},
-  {
-  path: '/makeOffer/:id',
-  name: 'make-offer',
-  component: () => import('@/views/makeOffer/[id].vue'),
-  props: true,
-},
-
-
+      path: '/product/:id',
+      name: 'product-detail',
+      component: () => import('@/views/ProductDetailPage.vue'),
+      props: true,
+    },
+    {
+      path: '/makeOffer/:id',
+      name: 'make-offer',
+      component: () => import('@/views/MakeOfferPage.vue'),
+      props: true,
+    },
   ],
 });
 
