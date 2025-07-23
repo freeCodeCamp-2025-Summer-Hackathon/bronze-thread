@@ -2,8 +2,11 @@ package middlewares
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 
+	"github.com/freeCodeCamp-2025-Summer-Hackathon/bronze-thread/cmd/server/db"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -35,9 +38,28 @@ func IsAuthorized() gin.HandlerFunc {
 			return
 		}
 
-		if claims, ok := tokenData.Claims.(jwt.MapClaims); ok {
-			c.Set("user", claims)
+		claims, ok := tokenData.Claims.(jwt.MapClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
 		}
+
+		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		var user db.User
+		db.DB.Omit("password").Where("ID=?", claims["id"]).Find(&user)
+
+		if user.ID == 0 {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		c.Set("currentUser", user)
 
 		c.Next()
 	}
