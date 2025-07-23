@@ -38,3 +38,23 @@ func haversine(lat1, lng1, lat2, lng2 float64) float64 {
 
 	return R * 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 }
+
+func GetUserItemsMapping(users []db.User) (map[uint][]db.Item, error) {
+	userIDs := make([]uint, 0, len(users))
+	for _, u := range users {
+		userIDs = append(userIDs, u.ID)
+	}
+
+	var items []db.Item
+
+	if err := db.DB.Where("owner_id IN ?", userIDs).Find(&items).Error; err != nil {
+		return nil, err
+	}
+
+	itemsPerUser := make(map[uint][]db.Item)
+	for _, item := range items {
+		itemsPerUser[item.OwnerID] = append(itemsPerUser[item.OwnerID], item)
+	}
+
+	return itemsPerUser, nil
+}

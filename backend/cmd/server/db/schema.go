@@ -25,3 +25,13 @@ type User struct {
 	TotalRatings int
 	TotalSwaps int
 }
+
+type Item struct {
+	gorm.Model
+	OwnerID uint
+	CategoryID uint
+	Name string
+	Description string 
+
+	Owner User
+}
