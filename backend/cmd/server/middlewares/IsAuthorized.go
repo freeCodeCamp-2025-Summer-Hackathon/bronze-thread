@@ -45,8 +45,9 @@ func IsAuthorized() gin.HandlerFunc {
 			return
 		}
 
-		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
+		exp, ok := claims["exp"].(float64)
+		if !ok || float64(time.Now().Unix()) > exp {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired or invalid"})
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
