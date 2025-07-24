@@ -131,7 +131,7 @@ func GetSignedInUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusUnauthorized, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
 		"data":    user,
 	})
