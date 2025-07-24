@@ -52,9 +52,7 @@ func IsAuthorized() gin.HandlerFunc {
 		}
 
 		var user db.User
-		db.DB.Omit("password").Where("ID=?", claims["id"]).Find(&user)
-
-		if user.ID == 0 {
+		if err := db.DB.Omit("password").Where("ID=?", claims["id"]).First(&user).Error; err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
