@@ -142,12 +142,10 @@ const buttons = [
   { button: 'Contact', to: '/contact' },
 ];
 
-const isActive = (path: string) => route.path === path;
 
-// const navigate = (path: string) => {
-//   isMobileMenuOpen.value = false
-//   router.push(path)
-// }
+const isActive = (path: string) => route.path === path || route.path.startsWith(path + '/shop');
+
+
 </script>
 
 <style scoped>

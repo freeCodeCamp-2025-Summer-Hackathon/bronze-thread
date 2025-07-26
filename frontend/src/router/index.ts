@@ -27,6 +27,7 @@ const router = createRouter({
       name: 'signin',
       component: AuthView,
     },
+  
     {
       path: '/product/:id',
       name: 'product-detail',
@@ -39,6 +40,12 @@ const router = createRouter({
       component: () => import('@/views/MakeOfferPage.vue'),
       props: true,
     },
+     {
+      path: '/offerStatus',
+      name: 'offerStatus',
+      component: () => import('@/views/offerStatus.vue'),
+    },
+   
   ],
 });
 

@@ -10,7 +10,7 @@
     <p class="text-lg font-swap text-center font-bold mb-4">${{ product.price }}</p>
     <button
       @click="handleClick"
-      class="w-full bg-black hover:text-swapbase hover:bg-white text-white py-2 rounded"
+      class="w-full bg-black hover:text-swapbase hover:border-swapbase hover:border-2 hover:bg-white text-white py-2 rounded"
     >
       View Product
     </button>

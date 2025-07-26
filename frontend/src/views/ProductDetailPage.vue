@@ -35,21 +35,13 @@ watch(product, (newProduct) => {
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div class="flex flex-col gap-y-5">
             <div class="mb-10 border-2 p-2 rounded-lg">
-              <img
-                :src="mainImage"
-                :alt="product.title"
-                class="rounded-lg shadow-md object-center object-cover mb-10 h-96 w-full"
-              />
+              <img :src="mainImage" :alt="product.title"
+                class="rounded-lg shadow-md object-center object-cover mb-10 h-96 w-full" />
             </div>
 
             <div class="flex flex-wrap gap-4 justify-center mb-10 mt-10">
-              <img
-                v-for="(thumb, index) in product.thumbnails"
-                :key="index"
-                :src="thumb"
-                @click="mainImage = thumb"
-                class="w-32 sm:w-20 md:w-28 h-auto border hover:scale-105 transition rounded cursor-pointer"
-              />
+              <img v-for="(thumb, index) in product.thumbnails" :key="index" :src="thumb" @click="mainImage = thumb"
+                class="w-32 sm:w-20 md:w-28 h-auto border hover:scale-105 transition rounded cursor-pointer" />
             </div>
           </div>
 
@@ -61,8 +53,7 @@ watch(product, (newProduct) => {
               <div class="flex justify-between items-center">
                 <div class="flex items-start gap-3">
                   <div
-                    class="bg-[#FCCEE8] text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
-                  >
+                    class="bg-[#FCCEE8] text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold">
                     {{ product.seller.initials }}
                   </div>
 
@@ -76,30 +67,21 @@ watch(product, (newProduct) => {
                       </div>
 
                       <div class="flex items-center gap-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="h-4 w-4 text-gray-600"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fill-rule="evenodd"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 20 20"
+                          fill="currentColor">
+                          <path fill-rule="evenodd"
                             d="M10 2a6 6 0 016 6c0 4.418-6 10-6 10S4 12.418 4 8a6 6 0 016-6zm0 8a2 2 0 100-4 2 2 0 000 4z"
-                            clip-rule="evenodd"
-                          />
+                            clip-rule="evenodd" />
                         </svg>
                         <span>{{ product.seller.location }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <NuxtLink>
-                  <button
-                    class="border border-black bg-white font-swap px-4 py-2 rounded hover:bg-swaplight hover:bg-text-white"
-                  >
-                    View Profile
-                  </button>
-                </NuxtLink>
+                <button
+                  class="border border-black bg-white font-swap px-4 py-2 rounded hover:bg-swapbase hover:text-white">
+                  View Profile
+                </button>
               </div>
             </div>
             <div class="border-[#FFE082] mt-10 bg-[#FFF8E1] p-4 rounded mb-6">
@@ -111,44 +93,32 @@ watch(product, (newProduct) => {
               </ul>
             </div>
             <div class="flex gap-4 mb-6 flex-wrap">
-              <button
-                @click="goToOfferPage"
-                class="bg-black text-white font-swap px-24 py-2 rounded hover:text-swapbase hover:bg-white"
-              >
+              <button @click="goToOfferPage"
+                class="bg-black text-white font-swap px-24 py-2 rounded hover:border-swapbase hover:border-2 hover:text-swapbase hover:bg-white">
                 Make an Offer
               </button>
 
-              <NuxtLink>
-                <button
-                  class="border border-black font-swap px-24 py-2 rounded hover:text-swapbase hover:bg-swaplight"
-                >
-                  Send Message
-                </button>
-              </NuxtLink>
+              <button class="border border-black font-swap px-24 py-2 rounded hover:text-white hover:bg-swapbase">
+                Send Message
+              </button>
             </div>
           </div>
         </div>
 
         <div class="pt-10 mt-10">
           <div class="flex gap-6 border-b pb-2 mb-4 cursor-pointer text-sm">
-            <span
-              :class="[
-                activeTab === 'description'
-                  ? 'font-semibold font-swap  text-black border-b-2 border-black'
-                  : 'text-gray-400',
-              ]"
-              @click="activeTab = 'description'"
-            >
+            <span :class="[
+              activeTab === 'description'
+                ? 'font-semibold font-swap  text-black border-b-2 border-black'
+                : 'text-gray-400',
+            ]" @click="activeTab = 'description'">
               Description
             </span>
-            <span
-              :class="[
-                activeTab === 'specs'
-                  ? 'font-semibold font-swap text-black border-b-2 border-black'
-                  : 'text-gray-400',
-              ]"
-              @click="activeTab = 'specs'"
-            >
+            <span :class="[
+              activeTab === 'specs'
+                ? 'font-semibold font-swap text-black border-b-2 border-black'
+                : 'text-gray-400',
+            ]" @click="activeTab = 'specs'">
               Specifications
             </span>
           </div>

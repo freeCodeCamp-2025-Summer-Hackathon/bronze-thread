@@ -8,21 +8,15 @@
     <div class="container mx-auto px-4 mt-6">
       <div class="flex flex-col lg:flex-row gap-8 px-4">
         <div class="w-full lg:w-auto flex justify-center lg:justify-start">
-          <div
-            class="flex flex-col items-center md:flex-row md:items-start lg:flex-col gap-6 pt-10"
-          >
+          <div class="flex flex-col items-center md:flex-row md:items-start lg:flex-col gap-6 pt-10">
             <CategoryFilter v-model="selectedCategories" :products="products" />
             <PriceFilter v-model="priceRange" />
           </div>
         </div>
 
         <div class="w-full lg:w-4/6 flex justify-center">
-          <ProductGrid
-            :products="filteredProducts"
-            :selected-categories="selectedCategories"
-            :price-range="priceRange"
-            @view="handleViewProduct"
-          />
+          <ProductGrid :products="filteredProducts" :selected-categories="selectedCategories" :price-range="priceRange"
+            @view="handleViewProduct" />
         </div>
       </div>
     </div>
@@ -40,6 +34,7 @@ import ProductGrid from '@/components/shop/productGrid.vue';
 import FooterNav from '@/components/footer/FooterNav.vue';
 import heroHeading from '@/components/shop/heroHeading.vue';
 import { products } from '@/data/productsData';
+import { onMounted } from 'vue'
 
 const searchQuery = ref('');
 const selectedCategories = ref<string[]>([]);
@@ -55,4 +50,8 @@ const filteredProducts = computed(() => {
 function handleViewProduct(id: number) {
   console.log('View product', id);
 }
+
+onMounted(() => {
+  localStorage.setItem('allProducts', JSON.stringify(products))
+})
 </script>
