@@ -59,10 +59,7 @@ const goToDetail = (id: number) => {
         />
 
         <div class="border-2 rounded-lg text-center py-3">
-          <h3
-            class="text-lg font-bold text-[#222] hover:underline"
-            @click="goToDetail(product.id)"
-          >
+          <h3 class="text-lg font-bold text-[#222] hover:underline" @click="goToDetail(product.id)">
             {{ product.title }}
           </h3>
           <p class="text-sm text-gray-600">{{ product.category }}</p>
@@ -73,14 +70,14 @@ const goToDetail = (id: number) => {
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { products } from '@/data/productsData' // adjust path as needed
+import { useRouter } from 'vue-router';
+import { products } from '@/data/productsData'; // adjust path as needed
 
-const router = useRouter()
+const router = useRouter();
 
-const displayedProducts = products.slice(0, 9)
+const displayedProducts = products.slice(0, 9);
 
 const goToDetail = (id: number) => {
-  router.push(`/product/${id}`)
-}
+  router.push(`/product/${id}`);
+};
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { products } from '@/data/productsData.ts';
 import FixedItemCard from '@/components/offer/fixedItemCard.vue';
 import UserItemCard from '@/components/offer/userItemCard.vue';
@@ -7,7 +7,6 @@ import { ref } from 'vue';
 import Navbar from '@/components/navbar/mainNav.vue';
 import FooterNav from '@/components/footer/FooterNav.vue';
 import SwapMethodModal from '@/components/shop/swapMethodModal.vue';
-
 
 const route = useRoute();
 
@@ -24,16 +23,14 @@ const toggleSelection = (index: number) => {
   if (i === -1) selectedItems.value.push(index);
   else selectedItems.value.splice(i, 1);
 };
-const showSwapModal = ref(false)
+const showSwapModal = ref(false);
 
 const goToSwapMethod = () => {
-  const selectedProductIds = selectedItems.value.map((index) => userItems[index].id)
-  localStorage.setItem('selectedOfferItems', JSON.stringify(selectedProductIds))
-  localStorage.setItem('wantedItemId', productId.toString())
-  showSwapModal.value = true
-}
-
-
+  const selectedProductIds = selectedItems.value.map((index) => userItems[index].id);
+  localStorage.setItem('selectedOfferItems', JSON.stringify(selectedProductIds));
+  localStorage.setItem('wantedItemId', productId.toString());
+  showSwapModal.value = true;
+};
 </script>
 
 <template>
@@ -54,14 +51,21 @@ const goToSwapMethod = () => {
         <div class="flex-1">
           <h2 class="text-xl font-swap font-semibold mb-4">Select Items to Offer</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <UserItemCard v-for="(item, index) in userItems" :key="item.id" :item="item"
-              :selected="selectedItems.includes(index)" @toggle="toggleSelection(index)" />
+            <UserItemCard
+              v-for="(item, index) in userItems"
+              :key="item.id"
+              :item="item"
+              :selected="selectedItems.includes(index)"
+              @toggle="toggleSelection(index)"
+            />
           </div>
 
           <div class="pt-10 flex flex-col items-center">
             <button
               class="bg-black font-swap hover:bg-white hover:border-swapbase hover:border-2 hover:text-swapbase text-white px-6 py-3 rounded-lg disabled:opacity-50"
-              :disabled="selectedItems.length === 0" @click="goToSwapMethod">
+              :disabled="selectedItems.length === 0"
+              @click="goToSwapMethod"
+            >
               Continue with Offer
             </button>
             <SwapMethodModal v-model:show="showSwapModal" />

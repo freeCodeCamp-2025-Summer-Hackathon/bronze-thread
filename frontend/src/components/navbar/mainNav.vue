@@ -142,10 +142,7 @@ const buttons = [
   { button: 'Contact', to: '/contact' },
 ];
 
-
 const isActive = (path: string) => route.path === path || route.path.startsWith(path + '/shop');
-
-
 </script>
 
 <style scoped>
