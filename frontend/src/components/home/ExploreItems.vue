@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { products } from '@/data/productsData'; 
+import { products } from '@/data/productsData';
 const router = useRouter();
 
 const displayedProducts = products.slice(0, 9);
