@@ -25,8 +25,8 @@ declare module 'vue' {
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
-    InfoCards: typeof import('./src/components/home/InfoCards.vue')['default']
     LoginForm: typeof import('./src/components/auth/LoginForm.vue')['default']
+    InfoCards: typeof import('./src/components/home/InfoCards.vue')['default']
     MainNav: typeof import('./src/components/navbar/mainNav.vue')['default']
     Nav: typeof import('./src/components/navbar/nav.vue')['default']
     Navbar: typeof import('./src/components/navbar/navbar.vue')['default']
@@ -43,13 +43,14 @@ declare module 'vue' {
     SubscribeSection: typeof import('./src/components/home/SubscribeSection.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
     UButton: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Button.vue')['default']
-    UCard: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Card.vue')['default']
     UForm: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Form.vue')['default']
     UFormField: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/FormField.vue')['default']
     UInput: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Input.vue')['default']
     ULink: typeof import('./node_modules/@nuxt/ui/dist/runtime/vue/components/Link.vue')['default']
-    UserItemCard: typeof import('./src/components/offer/userItemCard.vue')['default']
     UTabs: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tabs.vue')['default']
+    WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
+    UserItemCard: typeof import('./src/components/offer/userItemCard.vue')['default']
     WhyChooseUs: typeof import('./src/components/about/whyChooseUs.vue')['default']
+
   }
 }

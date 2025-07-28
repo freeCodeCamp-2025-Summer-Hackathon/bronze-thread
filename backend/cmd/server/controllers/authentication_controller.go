@@ -77,6 +77,7 @@ func Signin(c *gin.Context) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
+			"id":    user.ID,
 			"email": user.Email,
 			"name":  user.Username,
 			"exp":   time.Now().Add(time.Hour * 24).Unix(),
@@ -96,5 +97,42 @@ func Signin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Signed in successfully",
 		"user":    user,
+	})
+}
+
+func SignOut(c *gin.Context) {
+	_, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "User not signed in.",
+		})
+		return
+	}
+
+	c.SetCookie("token", "", -1, "/", "", false, true)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User signed out successfully.",
+	})
+}
+
+func GetSignedInUser(c *gin.Context) {
+	userInterface, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "User not signed in.",
+		})
+		return
+	}
+
+	user, ok := userInterface.(db.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user type"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"data":    user,
 	})
 }
